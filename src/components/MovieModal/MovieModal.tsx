@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import css from "./MovieModal.module.css";
 import { createPortal } from "react-dom";
-import type { Movie } from "../../types/muvie";
+import type { Movie } from "../../types/movie";
 
 interface MovieModalProps {
   onClose: () => void;
@@ -30,7 +30,7 @@ export default function MovieModal({ onClose, movie }: MovieModalProps) {
       document.body.style.overflow = "";
     };
   }, [onClose]);
-    
+
   if (!movie) return null;
 
   return createPortal(
