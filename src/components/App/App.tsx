@@ -12,28 +12,20 @@ import MovieModal from "../MovieModal/MovieModal";
 function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [topic, setTopic] = useState<string>("");
-  const [curretPage, setCurrentPage] = useState<number>(1);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const hendalSearch = (newTopic: string) => {
+  const handleSearch = (newTopic: string) => {
     setTopic(newTopic);
     setMovies([]);
-    setCurrentPage(1);
+    setIsError(false);
   };
 
-  const onModalClose = () => {
+  const handleModalClose = () => {
     setSelectedMovie(null);
-    setIsModalOpen(false);
-  };
-
-  const onModalOpen = (movie: Movie) => {
-    setIsModalOpen(true);
-    setSelectedMovie(movie);
   };
 
   useEffect(() => {
@@ -41,8 +33,9 @@ function App() {
 
     async function fetchData() {
       try {
+        setIsError(false);
         setIsLoading(true);
-        const data = await fetchMovies(topic, curretPage);
+        const data = await fetchMovies(topic);
         if (data.length === 0) {
           toast.error("No movies found for your request.");
           return;
@@ -55,18 +48,20 @@ function App() {
       }
     }
     fetchData();
-  }, [topic, curretPage]);
+  }, [topic]);
 
-  const isMouvieTrue = movies.length > 0;
+  const isMouviesArray = movies.length > 0;
 
   return (
     <div className={css.app}>
-      <SearchBar onSubmit={hendalSearch} />
-      {isMouvieTrue && <MovieGrid movies={movies} onSelect={onModalOpen} />}
+      <SearchBar onSubmit={handleSearch} />
+      {isMouviesArray && (
+        <MovieGrid movies={movies} onSelect={setSelectedMovie} />
+      )}
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
-      {isModalOpen && (
-        <MovieModal onClose={onModalClose} movie={selectedMovie} />
+      {selectedMovie && (
+        <MovieModal onClose={handleModalClose} movie={selectedMovie} />
       )}
       <Toaster position="top-center" />
     </div>
